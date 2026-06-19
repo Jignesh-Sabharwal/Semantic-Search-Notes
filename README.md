@@ -76,12 +76,12 @@ Example output:
 
 ```text
 Reading notes...
-Found 69 chunks across your notes
+Found N chunks across your notes
 Embedding chunks (this takes a few seconds)...
 Building FAISS index...
-Done! Indexed 69 chunks.
+Done! Indexed N chunks.
 Saved: index.faiss, chunks.json
-Chroma: indexed 69 chunks
+Chroma: indexed N chunks
 ```
 
 ## Search Your Notes

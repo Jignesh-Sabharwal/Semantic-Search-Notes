@@ -1,5 +1,6 @@
 import sys, json
 import chromadb
+from chromadb.errors import NotFoundError
 from sentence_transformers import SentenceTransformer
 import faiss
 from pathlib import Path
@@ -10,6 +11,9 @@ TOP_K = 3
 def load_faiss_index():
     if not Path("index.faiss").exists():
         print("No index found. Run: python embed.py first.")
+        sys.exit(1)
+    if not Path("chunks.json").exists():
+        print("No chunks metadata found. Run: python embed.py first.")
         sys.exit(1)
 
     index  = faiss.read_index("index.faiss")
@@ -23,16 +27,23 @@ def load_chroma_collection():
         print("No ChromaDB found. Run: python embed.py first.")
         sys.exit(1)
     client = chromadb.PersistentClient(path="chroma_db")
-    return client.get_collection("notes")
+    try:
+        return client.get_collection("notes")
+    except NotFoundError:
+        print("No ChromaDB notes collection found. Run: python embed.py first.")
+        sys.exit(1)
 
 
 # Search the FAISS index using the query embedding and print the top results.
 def search_faiss(query: str, index, chunks, qvec) -> None:
     faiss.normalize_L2(qvec)
-    scores, indices = index.search(qvec, TOP_K)
-    print(f"\nFAISS top {TOP_K} results for: '{query}'\n" + "─"*50)
+    top_k = min(TOP_K, index.ntotal)
+    scores, indices = index.search(qvec, top_k)
+    print(f"\nFAISS top {top_k} results for: '{query}'\n" + "─"*50)
     for rank, (score, idx) in enumerate(
             zip(scores[0], indices[0]), start=1):
+        if idx == -1:
+            continue
         chunk = chunks[idx]
         print(f"#{rank} [{score:.3f}] {chunk['source']}")
         print(f"   {chunk['text']}")
@@ -41,11 +52,12 @@ def search_faiss(query: str, index, chunks, qvec) -> None:
 
 # Search the ChromaDB collection using the query embedding and print the top results.
 def search_chroma(query: str, collection, qvec) -> None:
+    top_k = min(TOP_K, collection.count())
     results = collection.query(
         query_embeddings=[qvec[0].tolist()],
-        n_results=TOP_K,
+        n_results=top_k,
     )
-    print(f"\nChromaDB top {TOP_K} results for: '{query}'\n" + "─"*50)
+    print(f"\nChromaDB top {top_k} results for: '{query}'\n" + "─"*50)
     for rank, (doc, meta, dist) in enumerate(
             zip(results["documents"][0],
                 results["metadatas"][0],

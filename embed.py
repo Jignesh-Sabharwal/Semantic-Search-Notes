@@ -78,11 +78,12 @@ def build_index() -> tuple[list[dict], list[list[float]]]:
 # Save the same chunks and embeddings into a persistent ChromaDB collection.
 def build_chroma_index(chunks: list[dict], embeddings: list[list[float]]) -> None:
     import chromadb
+    from chromadb.errors import NotFoundError
 
     client = chromadb.PersistentClient(path="chroma_db")
     try:
         client.delete_collection("notes")
-    except ValueError:
+    except (NotFoundError, ValueError):
         pass
 
     collection = client.create_collection("notes")
