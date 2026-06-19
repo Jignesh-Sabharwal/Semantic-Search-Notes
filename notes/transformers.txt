@@ -1,0 +1,25 @@
+The Transformer is a neural network architecture introduced in the 2017 paper "Attention Is All You Need" by Vaswani and coauthors. The key idea was to replace recurrence and convolution in sequence transduction with attention mechanisms. This made it possible to process tokens more parallelly than recurrent neural networks, which step through sequences one position at a time.
+
+A Transformer usually represents input text as tokens, then converts those tokens into vectors called embeddings. Tokenization may split text into words, subwords, characters, or byte-level units depending on the model. The tokenizer prepares inputs in the format the model expects, including token IDs and often attention masks.
+
+Because the original Transformer has no recurrence, it needs some way to represent order. The 2017 architecture used positional encodings added to token embeddings so the model could distinguish the same token appearing at different positions. Modern Transformer variants may use learned positional embeddings, rotary position embeddings, relative position bias, or other schemes.
+
+The encoder-decoder Transformer was designed for sequence-to-sequence tasks such as machine translation. The encoder reads the source sequence and builds contextual representations. The decoder generates the target sequence while attending to both earlier target tokens and encoder outputs. This design supports tasks where the input and output are both sequences.
+
+Encoder-only Transformers, such as BERT-style models, are commonly used for representation learning and understanding tasks. They can produce contextual embeddings for classification, retrieval, token labeling, and question answering. These models typically use bidirectional self-attention, meaning each token can attend to tokens on both its left and right during pretraining or inference, depending on masking rules.
+
+Decoder-only Transformers, such as GPT-style language models, generate text autoregressively. They predict the next token using previous tokens as context. Causal masking prevents a token from attending to future tokens during training, which matches the left-to-right generation process used at inference time.
+
+Multi-head attention is one of the central mechanisms of the Transformer. Instead of computing a single attention pattern, the model computes several attention heads in parallel. Each head can learn different relationships, such as local syntactic patterns, long-range dependencies, or token-to-token alignment. The head outputs are combined and passed through additional layers.
+
+The Transformer block also includes feed-forward networks, residual connections, and layer normalization. The feed-forward network processes each token representation independently after attention has mixed information across tokens. Residual connections help gradients flow through deep stacks of layers, and normalization helps stabilize training.
+
+Attention masks tell the model which token positions should be attended to and which should be ignored. Padding masks prevent the model from treating padding tokens as real content when batching sequences of different lengths. Causal masks prevent future-token attention in autoregressive generation.
+
+Transformers became influential because they scaled well with data, compute, and model size. The architecture is used not only for natural language processing but also in vision, audio, video, reinforcement learning, biology, and multimodal systems. Hugging Face's Transformers library provides model definitions and tooling for text, vision, audio, video, and multimodal models.
+
+A limitation of standard full self-attention is that its compute and memory cost grow quadratically with sequence length. This is because each token can compare itself with every other token in the sequence. Many later models explore sparse attention, linear attention, recurrence, chunking, retrieval, or state-space alternatives to improve long-context efficiency.
+
+The practical reason to learn Transformers is that many modern AI systems are built from Transformer blocks or close relatives. Understanding tokenization, embeddings, positional information, attention, residual streams, and feed-forward layers gives a strong foundation for reading model code and research papers.
+
+

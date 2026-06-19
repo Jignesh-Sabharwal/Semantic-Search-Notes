@@ -1,0 +1,25 @@
+Attention is a mechanism that lets a model decide which parts of an input are most relevant for producing a representation or output. In language, the meaning of a word often depends on other words around it. Attention gives the model a learned way to connect related tokens, such as a pronoun and the noun it refers to.
+
+Self-attention means that tokens in the same sequence attend to one another. For each token, the model computes relationships with other tokens and uses those relationships to form a new contextual representation. After self-attention, the vector for a word is no longer just a static word embedding; it contains information from the surrounding context.
+
+The standard scaled dot-product attention mechanism uses queries, keys, and values. A query represents what a token is looking for, a key represents what a token offers for matching, and a value represents the information that can be copied or mixed. Attention scores are computed from query-key similarity, normalized, and then used to weight the values.
+
+The scaling factor in scaled dot-product attention divides the dot products by the square root of the key dimension. This helps prevent dot products from becoming too large when vector dimensions increase. Without scaling, the softmax can become very peaked, which can make gradients smaller and training less stable.
+
+Multi-head attention repeats the attention operation several times with different learned projections. Each head can focus on different types of token relationships. One head might track nearby words, another might track subject-verb agreement, and another might connect a question word to its answer. The model learns these patterns from data rather than receiving hand-coded grammar rules.
+
+Attention weights are often visualized as matrices where rows represent query positions and columns represent key positions. Bright cells indicate high attention weight. These visualizations can be useful for intuition, but they should not always be treated as complete explanations of model behavior. A model's computation includes values, projections, residual connections, and later layers, not only attention weights.
+
+Cross-attention occurs when queries come from one sequence and keys and values come from another sequence. In the original encoder-decoder Transformer, decoder layers use cross-attention to attend to encoder outputs. This lets the decoder generate a translated sentence while referring back to the source sentence.
+
+Causal attention is used in autoregressive language modeling. A token is allowed to attend only to itself and earlier tokens, not future tokens. This matches the generation process where the model predicts the next token from the previous context. Causal masks enforce this rule during training and inference.
+
+Padding masks are used when sequences of different lengths are batched together. Shorter examples are padded to match the length of longer examples, but those padding positions should not influence the model. An attention mask marks which positions are real tokens and which should be ignored.
+
+Attention is powerful because it creates direct paths between distant tokens. In recurrent networks, information may need to pass through many time steps to connect distant words. In self-attention, any token can directly compare with any other token in the same context window. This makes long-range dependency modeling easier, although full attention can be expensive for very long inputs.
+
+In the Transformer, attention is followed by feed-forward layers and combined with residual connections and normalization. Attention mixes information across token positions, while the feed-forward network transforms each token's representation. Repeating this pattern across layers lets the model build increasingly abstract representations.
+
+A useful mental model is that attention performs soft retrieval inside the context. Each token asks a learned question through its query vector, compares that query with key vectors, and blends value vectors from relevant positions. This is why attention is central to semantic search, question answering, translation, and long-context reasoning.
+
+

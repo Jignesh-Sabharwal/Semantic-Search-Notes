@@ -1,0 +1,25 @@
+Optimization in machine learning is the process of changing model parameters to reduce a loss function. In deep learning, the objective is usually non-convex, high-dimensional, and noisy because it is estimated from mini-batches of data. The optimizer does not guarantee a perfect global solution, but it tries to find parameters that work well in practice.
+
+Gradient descent updates parameters by moving in the opposite direction of the gradient. The gradient points in the direction of steepest increase of the loss, so the negative gradient points toward lower loss locally. The size of the step is controlled by the learning rate, one of the most important hyperparameters in training.
+
+Batch gradient descent computes the gradient using the entire training set before each update. This can be accurate but expensive for large datasets. Stochastic gradient descent estimates the gradient from one example or a mini-batch of examples. Mini-batch training is common because it balances computational efficiency, hardware utilization, and noisy but useful gradient estimates.
+
+The learning rate determines how large each update is. If it is too small, training may be very slow or get stuck making tiny progress. If it is too large, the loss may oscillate or diverge. Learning rate schedules reduce or otherwise change the learning rate over time so training can make larger early progress and finer later adjustments.
+
+Momentum improves gradient descent by accumulating a moving average of past gradients. This can accelerate movement in consistent directions and dampen oscillations in directions where gradients alternate. Nesterov momentum is a related variant that evaluates the gradient with a lookahead-style correction.
+
+Adaptive optimizers adjust update sizes per parameter. Adam is a widely used optimizer that combines momentum-like first-moment estimates with second-moment estimates related to squared gradients. The original Adam paper describes it as computationally efficient, memory efficient, and suitable for large problems, noisy gradients, sparse gradients, and non-stationary objectives.
+
+AdamW is a variant that decouples weight decay from the adaptive gradient update. In practice, AdamW is often preferred over classic Adam when using weight decay for neural network training. Weight decay penalizes large weights and can improve generalization by encouraging simpler parameter values.
+
+Loss surfaces in deep learning can contain flat regions, sharp valleys, saddle points, and many local structures. The training path depends on initialization, batch order, optimizer choice, learning rate, architecture, and data preprocessing. Because of this complexity, validation curves are usually more informative than training loss alone.
+
+Early stopping is an optimization-related regularization technique. Training is stopped when validation performance stops improving, even if training loss continues to decrease. This can prevent the model from moving into parameter settings that fit the training set better but generalize worse.
+
+Gradient clipping limits the norm or value of gradients before the optimizer update. It is especially common in recurrent networks, sequence models, and large models where occasional large gradients can destabilize training. Clipping does not fix the underlying objective, but it can keep optimization numerically stable.
+
+Normalization and initialization also affect optimization. Good initialization keeps activations and gradients in reasonable ranges at the start of training. Batch normalization, layer normalization, and related methods can make training more stable by controlling the scale and distribution of intermediate representations.
+
+A practical optimizer choice often starts with Adam or AdamW for fast experimentation, then explores SGD with momentum when appropriate for the task. The best optimizer depends on the architecture, dataset, batch size, regularization, and evaluation metric. The safest habit is to compare choices using the same validation protocol rather than assuming one optimizer is always best.
+
+

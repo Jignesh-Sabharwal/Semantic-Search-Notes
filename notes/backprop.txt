@@ -1,0 +1,23 @@
+Backpropagation is the standard algorithm used to compute gradients in neural networks. It is not a separate learning objective; it is a way to efficiently calculate how the loss changes with respect to every parameter. Once those gradients are available, an optimizer such as stochastic gradient descent or Adam can update the parameters.
+
+A neural network can be viewed as a computational graph. Inputs flow through operations such as matrix multiplication, addition, activation functions, normalization, and loss computation. During the forward pass, the graph produces predictions and a loss value. During the backward pass, gradients are propagated from the loss back through the graph.
+
+The mathematical foundation of backpropagation is the chain rule from calculus. If a function is made by composing smaller functions, the derivative of the full function can be computed by multiplying local derivatives along the path. Backpropagation applies this idea recursively from the output of the network back toward the inputs and parameters.
+
+Each operation in a computational graph has a local gradient. For example, addition sends the upstream gradient to both inputs, while multiplication scales the upstream gradient by the other input. Matrix multiplication, activation functions, and normalization layers have their own derivative rules. Deep learning frameworks implement these rules automatically.
+
+The backward pass starts with the derivative of the loss with respect to itself, which is 1. Then each node receives an upstream gradient, combines it with its local derivative, and sends gradients to its inputs. If a value is used in multiple places, gradients from all downstream paths are added together.
+
+Backpropagation is efficient because it reuses intermediate values from the forward pass. For example, the output of an activation function or the inputs to a matrix multiplication may be needed to compute local gradients. Frameworks such as PyTorch store the necessary graph information while tensors are tracked for automatic differentiation.
+
+Automatic differentiation, often called autograd, is the broader technique used by modern deep learning frameworks to compute derivatives of programs. Reverse-mode automatic differentiation is especially efficient when there is one scalar loss and many parameters, which is the typical neural network training setup. Backpropagation is reverse-mode automatic differentiation applied to neural networks.
+
+Backpropagation gives exact derivatives of the implemented computation up to floating-point numerical precision. It is different from numerical differentiation, which estimates derivatives by slightly perturbing each parameter. Numerical differentiation can be useful for checking gradients, but it is much too slow for training large neural networks.
+
+Vanishing and exploding gradients are common training difficulties in deep networks. If gradients shrink too much as they move backward, early layers learn very slowly. If gradients grow too much, parameter updates can become unstable. Architectures and techniques such as ReLU activations, residual connections, normalization, careful initialization, and gradient clipping help manage these issues.
+
+Backpropagation does not decide the learning rate or the update rule. It only computes gradients. The optimizer decides how to use those gradients, whether by simple gradient descent, momentum, adaptive learning rates, weight decay, or other methods. This separation is why the same backpropagation engine can support many optimizers.
+
+In PyTorch, calling loss.backward() computes gradients for tensors that require gradients. Optimizers such as torch.optim.SGD or torch.optim.Adam then read those gradients and update parameters. A common training loop clears old gradients, runs the forward pass, computes the loss, calls backward, and then steps the optimizer.
+
+Understanding backpropagation is useful even when frameworks automate it. It helps diagnose shape errors, exploding gradients, detached tensors, missing requires_grad flags, and unexpected training behavior. It also clarifies why differentiable operations are important in end-to-end neural network training.

@@ -1,0 +1,24 @@
+Machine learning is the field of building systems that improve their behavior from data rather than relying only on explicit hand-written rules. In supervised learning, a model learns from examples that contain both inputs and correct target outputs, such as emails paired with spam labels or images paired with class names. In unsupervised learning, the data has no target labels and the algorithm looks for structure such as clusters, latent factors, or unusual examples.
+
+A common supervised learning workflow starts with a dataset, a model family, a loss function, and an optimization method. The dataset supplies examples, the model family defines what kinds of functions can be learned, the loss function measures prediction error, and the optimizer updates the model parameters. These pieces work together: a powerful model with a poor loss or a weak optimizer may still perform badly.
+
+Training data is the part of the dataset used to fit the model parameters. Validation data is used during development to compare models, tune hyperparameters, or decide when to stop training. Test data is saved for the end so that the final evaluation is less biased by repeated experimentation. This separation is important because a model can appear strong on examples it has indirectly influenced during development.
+
+Features are the input variables that a model uses to make predictions. In tabular machine learning, features might include age, income, transaction amount, or product category. In deep learning, feature extraction is often learned automatically from raw data such as pixels, text tokens, or audio waveforms. The quality of the representation strongly affects how easy the learning problem is.
+
+Labels are the target outputs in supervised learning. A binary classifier might use labels such as 0 and 1, while a multiclass classifier might use labels such as cat, dog, and bird. For regression, the label is usually a continuous value such as price, temperature, or demand. Label quality matters because noisy or inconsistent labels make the training signal less reliable.
+
+A loss function converts model errors into a number that can be minimized. Mean squared error is widely used for regression because it penalizes large numerical mistakes. Cross-entropy is widely used for classification because it compares predicted probabilities with the true class. The loss is not always the same as the business metric, but it should be aligned closely enough to guide learning.
+
+Generalization means performing well on new examples, not just on the training set. A model that memorizes the training set has low training error but may fail on new data. Regularization, data augmentation, early stopping, and careful validation are common ways to improve generalization. The goal is not to fit the past perfectly, but to learn patterns that remain useful.
+
+Overfitting happens when a model captures noise or accidental details in the training data. Underfitting happens when the model is too simple, poorly trained, or missing important features, so it cannot capture the real pattern. The bias-variance tradeoff is a useful mental model: overly simple models tend to have high bias, while overly flexible models can have high variance.
+
+Hyperparameters are choices set before or around training rather than learned directly from the data. Examples include learning rate, batch size, number of layers, number of trees, regularization strength, and maximum training epochs. Hyperparameter tuning usually uses validation performance because the training loss alone can reward memorization.
+
+A baseline is a simple reference model used to judge whether a more complex approach is worthwhile. For classification, a baseline might always predict the most common class. For regression, a baseline might predict the training mean. Strong machine learning practice compares new models against baselines before adding complexity.
+
+Cross-validation is a method for estimating model performance by repeatedly splitting the data into training and evaluation folds. It is useful when the dataset is not large enough to rely on a single train-test split. Cross-validation can reduce the chance that one lucky or unlucky split dominates the evaluation.
+
+A practical machine learning project also needs attention to data leakage. Leakage occurs when information from the test set or future data accidentally reaches the model during training. Examples include normalizing using the full dataset before splitting, including target-derived features, or randomly splitting time-series data when future examples should not influence past predictions.
+
