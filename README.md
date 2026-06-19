@@ -129,6 +129,34 @@ The two systems report scores differently:
 
 So the numbers may look different even when the returned notes are similar.
 
+## Run With Docker
+
+Build the Docker image:
+
+```bash
+docker build -t semantic-search-notes .
+```
+
+Build the FAISS and ChromaDB indexes:
+
+```bash
+docker run --rm -it -v "$PWD:/app" semantic-search-notes python embed.py
+```
+
+Search your notes:
+
+```bash
+docker run --rm -it -v "$PWD:/app" semantic-search-notes
+```
+
+You can also run `search.py` explicitly:
+
+```bash
+docker run --rm -it -v "$PWD:/app" semantic-search-notes python search.py
+```
+
+The `-v "$PWD:/app"` part mounts your project folder into the container, so generated files like `index.faiss`, `chunks.json`, and `chroma_db/` are saved on your machine.
+
 ## Generated Files
 
 These files are created by running `embed.py`:
