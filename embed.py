@@ -1,4 +1,5 @@
 import json
+import re
 from pathlib import Path
 
 from sentence_transformers import SentenceTransformer
@@ -8,6 +9,23 @@ INDEX_FILE  = Path("index.faiss")
 CHUNKS_FILE = Path("chunks.json")
 CHUNK_SIZE  = 3
 EMBED_BATCH_SIZE = 8
+ABBREVIATIONS = ["e.g.", "i.e.", "Dr.", "Mr.", "Mrs.", "Ms.", "U.S."]
+
+
+# Split text into sentences without breaking common abbreviations.
+def split_sentences(text: str) -> list[str]:
+    protected_text = text
+    placeholders = {}
+    for i, abbreviation in enumerate(ABBREVIATIONS):
+        placeholder = f"__ABBR_{i}__"
+        protected_text = protected_text.replace(abbreviation, placeholder)
+        placeholders[placeholder] = abbreviation
+
+    sentences = re.split(r"(?<=[.!?])\s+", protected_text)
+    for placeholder, abbreviation in placeholders.items():
+        sentences = [sentence.replace(placeholder, abbreviation)
+                     for sentence in sentences]
+    return [sentence.strip() for sentence in sentences if sentence.strip()]
 
 
 # Read every .txt file from notes/ and split the text into chunks.
@@ -15,10 +33,9 @@ def read_notes() -> list[dict]:
     chunks = []
     for file in sorted(NOTES_DIR.glob("*.txt")):
         text = file.read_text(encoding="utf-8")
-        sentences = [s.strip() for s in text.split(".")
-                     if s.strip()]
+        sentences = split_sentences(text)
         for i in range(0, len(sentences), CHUNK_SIZE):
-            chunk_text = ". ".join(sentences[i:i+CHUNK_SIZE]) + "."
+            chunk_text = " ".join(sentences[i:i+CHUNK_SIZE])
             chunks.append({
                 "text": chunk_text,
                 "source": file.name,
@@ -63,7 +80,12 @@ def build_chroma_index(chunks: list[dict], embeddings: list[list[float]]) -> Non
     import chromadb
 
     client = chromadb.PersistentClient(path="chroma_db")
-    collection = client.get_or_create_collection("notes")
+    try:
+        client.delete_collection("notes")
+    except ValueError:
+        pass
+
+    collection = client.create_collection("notes")
     collection.upsert(
         ids       = [str(c["chunk_id"]) for c in chunks],
         documents = [c["text"]      for c in chunks],
@@ -71,25 +93,6 @@ def build_chroma_index(chunks: list[dict], embeddings: list[list[float]]) -> Non
         metadatas = [{"source": c["source"]} for c in chunks],
     )
     print(f"Chroma: indexed {collection.count()} chunks")
-
-
-# Search the ChromaDB notes collection and print the closest matches.
-def search_chroma(query: str, n: int = 3) -> None:
-    import chromadb
-
-    client = chromadb.PersistentClient(path="chroma_db")
-    collection = client.get_collection("notes")
-    results = collection.query(
-        query_texts=[query],
-        n_results=n,
-    )
-    print(f"\nChroma results for: '{query}'")
-    for doc, meta, dist in zip(
-        results["documents"][0],
-        results["metadatas"][0],
-        results["distances"][0],
-    ):
-        print(f"  [{dist:.3f}] {meta['source']}: {doc[:150]}")
 
 
 # Build both FAISS and ChromaDB indexes from the notes folder.

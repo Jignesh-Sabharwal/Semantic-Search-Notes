@@ -1,6 +1,7 @@
 import sys, json
 import chromadb
 from sentence_transformers import SentenceTransformer
+import faiss
 from pathlib import Path
 TOP_K = 3
 
@@ -10,7 +11,6 @@ def load_faiss_index():
     if not Path("index.faiss").exists():
         print("No index found. Run: python embed.py first.")
         sys.exit(1)
-    import faiss
 
     index  = faiss.read_index("index.faiss")
     chunks = json.loads(Path("chunks.json").read_text(encoding="utf-8"))
@@ -28,8 +28,6 @@ def load_chroma_collection():
 
 # Search the FAISS index using the query embedding and print the top results.
 def search_faiss(query: str, index, chunks, qvec) -> None:
-    import faiss
-
     faiss.normalize_L2(qvec)
     scores, indices = index.search(qvec, TOP_K)
     print(f"\nFAISS top {TOP_K} results for: '{query}'\n" + "─"*50)
@@ -81,4 +79,6 @@ def main():
             search(query, index, chunks, collection, model)
         except KeyboardInterrupt:
             break
-main()
+
+if __name__ == "__main__":
+    main()
