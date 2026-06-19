@@ -131,7 +131,43 @@ So the numbers may look different even when the returned notes are similar.
 
 ## Run With Docker
 
-Build the Docker image:
+The easiest Docker workflow is with Docker Compose.
+
+Build the image:
+
+```bash
+docker compose build
+```
+
+Build the FAISS and ChromaDB indexes:
+
+```bash
+docker compose run --rm semantic-search python embed.py
+```
+
+Search your notes:
+
+```bash
+docker compose run --rm semantic-search
+```
+
+To exit search mode, type:
+
+```text
+q
+```
+
+or:
+
+```text
+quit
+```
+
+### Docker Without Compose
+
+You can also use plain Docker.
+
+Build the image:
 
 ```bash
 docker build -t semantic-search-notes .
